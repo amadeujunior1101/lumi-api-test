@@ -51,3 +51,7 @@ Este projeto utiliza:
 7 - na pasta lumi-api-test:
 
 	yarn start:dev ou npm run start:dev
+
+8 - Para executar os testes unitários:
+
+    yarn test ou npm run test
