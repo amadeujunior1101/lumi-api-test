@@ -6,7 +6,7 @@
   "scripts": {
     "start:dist": "ts-node ./dist/server.js",
     "start:dev": "nodemon",
-    "build": "rm -rf ./dist && tsc",
+    "build": "tsc && cp -r src/infra/data dist/infra",
     "test": "vitest",
     "start": "node ./dist/server.js"
   },
