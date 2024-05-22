@@ -1,31 +1,31 @@
-import pdfParse from "pdf-parse";
-import { BillGateway } from "../gateways/bill.gateway";
-import { BillParsedResult } from "./bill.interface";
+import pdfParse from 'pdf-parse'
+import { BillAdapter } from '../adapter/bill.adapter'
+import { BillParsedResult } from './bill.interface'
 
-export class ParserService implements BillGateway {
+export class ParserService implements BillAdapter {
   async parsePdf(pdfFile: Buffer): Promise<BillParsedResult | null> {
-    const data = await pdfParse(pdfFile);
+    const data = await pdfParse(pdfFile)
 
-    const lines = data.text.split("\n");
+    const lines = data.text.split('\n')
 
     const energyElectricalIndex = lines.findIndex((line) =>
-      line.includes("Energia Elétrica")
-    );
+      line.includes('Energia Elétrica')
+    )
     const energySCEEWithoutICMSIndex = lines.findIndex((line) =>
-      line.includes("Energia SCEE s/ ICMS")
-    );
+      line.includes('Energia SCEE s/ ICMS')
+    )
     const compensatedGDIIndex = lines.findIndex((line) =>
-      line.includes("Energia compensada GD I")
-    );
+      line.includes('Energia compensada GD I')
+    )
     const municipalPublicLightingContributionIndex = lines.findIndex((line) =>
-      line.includes("Contrib Ilum Publica Municipal")
-    );
+      line.includes('Contrib Ilum Publica Municipal')
+    )
     const numberClientIndex = lines.findIndex((line) =>
-      line.includes("Nº DO CLIENTE")
-    );
+      line.includes('Nº DO CLIENTE')
+    )
     const referenceMonthConsumerIndex = lines.findIndex((line) =>
-      line.includes("Referente a")
-    );
+      line.includes('Referente a')
+    )
 
     if (numberClientIndex !== -1) {
       const result: BillParsedResult = {
@@ -37,49 +37,49 @@ export class ParserService implements BillGateway {
           parseFloat(
             this.getLineValue(lines, energyElectricalIndex)
               .split(/\s+/)[2]
-              .replace(",", ".")
+              .replace(',', '.')
           ) || 0,
 
         energyElectricalKwhValue:
           parseFloat(
             this.getLineValue(lines, energyElectricalIndex)
               .split(/\s+/)[4]
-              .replace(",", ".")
+              .replace(',', '.')
           ) || 0,
 
         energySCEEWithoutICMSAmount:
           parseFloat(
             this.getLineValue(lines, energySCEEWithoutICMSIndex)
               .split(/\s+/)[4]
-              .replace(",", ".")
+              .replace(',', '.')
           ) || 0,
 
         energySCEEWithoutICMSValue:
           parseFloat(
             this.getLineValue(lines, energySCEEWithoutICMSIndex)
               .split(/\s+/)[6]
-              .replace(",", ".")
+              .replace(',', '.')
           ) || 0,
 
         energyCompensatedGDIAmount:
           parseFloat(
             this.getLineValue(lines, compensatedGDIIndex)
               .split(/\s+/)[4]
-              .replace(",", ".")
+              .replace(',', '.')
           ) || 0,
 
         energyCompensatedGDIValue:
           parseFloat(
             this.getLineValue(lines, compensatedGDIIndex)
               .split(/\s+/)[6]
-              .replace(",", ".")
+              .replace(',', '.')
           ) || 0,
 
         municipalPublicLightingContribution:
           parseFloat(
             this.getLineValue(lines, municipalPublicLightingContributionIndex)
               .split(/\s+/)[4]
-              .replace(",", ".")
+              .replace(',', '.')
           ) || 0,
 
         referenceMonth: this.getLineValue(
@@ -88,16 +88,16 @@ export class ParserService implements BillGateway {
         )
           .trim()
           .split(/\s+/)[0],
-      };
+      }
 
-      return result;
+      return result
     } else {
-      console.log('Linha "Nº DO CLIENTE" não encontrada.');
-      return null;
+      console.log('Linha "Nº DO CLIENTE" não encontrada.')
+      return null
     }
   }
 
   getLineValue(lines: string[], index: number): string {
-    return index >= 0 && index < lines.length ? lines[index].trim() : "";
+    return index >= 0 && index < lines.length ? lines[index].trim() : ''
   }
 }
